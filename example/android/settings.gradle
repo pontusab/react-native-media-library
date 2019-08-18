@@ -1,0 +1,6 @@
+rootProject.name = 'Example'
+
+include ':react-native-media-library'
+project(':react-native-media-library').projectDir = new File(rootProject.projectDir, '../../android')
+
+include ':app'
