@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.facebook.react.bridge.Promise;
-// import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMap;
 
 import static com.reactnativemedialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static com.reactnativemedialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
@@ -22,9 +22,9 @@ import static com.reactnativemedialibrary.MediaLibraryUtils.putAssetsInfo;
 class GetAssets extends AsyncTask<Void, Void, Void> {
   private final Context mContext;
   private final Promise mPromise;
-  private final Map<String, Object> mAssetOptions;
+  private final ReadableMap mAssetOptions;
 
-  public GetAssets(Context context, Map<String, Object> assetOptions, Promise promise) {
+  public GetAssets(Context context, ReadableMap assetOptions, Promise promise) {
     mContext = context;
     mAssetOptions = assetOptions;
     mPromise = promise;

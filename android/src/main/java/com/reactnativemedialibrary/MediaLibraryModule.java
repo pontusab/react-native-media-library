@@ -20,15 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.Promise;
-
-// import com.facebook.react.bridge.ReadableMap;
-// import com.facebook.react.bridge.ReadableNativeArray;
-// import com.facebook.react.bridge.ReadableNativeMap;
-
-
+ 
 // import org.unimodules.core.ExportedModule;
 // import org.unimodules.core.ModuleRegistry;
 // import org.unimodules.core.Promise;
@@ -253,7 +249,7 @@ public class MediaLibraryModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getAssetsAsync(Map<String, Object> assetOptions, Promise promise) {
+  public void getAssetsAsync(ReadableMap assetOptions, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
