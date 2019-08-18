@@ -41,7 +41,7 @@ class GetQueryInfo {
   }
 
   public GetQueryInfo invoke() {
-    // mLimit = mInput.containsKey("first") ? ((Double) mInput.get("first")).intValue() : 20;
+    mLimit = 20; //mInput.containsKey("first") ? ((Double) mInput.get("first")).intValue() : 20;
 
     // mSelection = new StringBuilder();
     // if (mInput.containsKey("album")) {
@@ -81,14 +81,15 @@ class GetQueryInfo {
     //           .append(createdBefore.longValue());
     // }
 
-    // mOrder = new StringBuilder();
+    mOrder = new StringBuilder();
     // if (mInput.containsKey("sortBy") && ((List) mInput.get("sortBy")).size() > 0) {
     //   mOrder.append(mapOrderDescriptor((List) mInput.get("sortBy")));
     // } else {
-    //   mOrder.append(MediaStore.Images.Media.DEFAULT_SORT_ORDER);
+      mOrder.append(MediaStore.Images.Media.DEFAULT_SORT_ORDER);
     // }
 
     // // to maintain compatibility with IOS field after is in string object
+    mOffset = 0;
     // mOffset = mInput.containsKey("after") ?
     //     Integer.parseInt((String) mInput.get("after")) : 0;
     return this;
