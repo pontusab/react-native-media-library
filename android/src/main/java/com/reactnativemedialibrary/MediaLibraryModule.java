@@ -204,12 +204,12 @@ public class MediaLibraryModule extends ReactContextBaseJavaModule {
 
 
   @ReactMethod
-  public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
-      return;
-    }
-
+  // Map<String, Object> 
+  public void getAlbumsAsync(ReadableMap options /* unused on android atm */, Promise promise) {
+    // if (isMissingPermissions()) {
+    //   promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+    //   return;
+    // }
     new GetAlbums(mContext, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
@@ -249,6 +249,7 @@ public class MediaLibraryModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  // Map<String, Object> 
   public void getAssetsAsync(ReadableMap assetOptions, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -304,6 +305,25 @@ public class MediaLibraryModule extends ReactContextBaseJavaModule {
   //   }
   //   promise.resolve(null);
   // }
+
+    //   public  boolean isStoragePermissionGranted() {
+    //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    //         if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    //                 == PackageManager.PERMISSION_GRANTED) {
+    //             Log.v(TAG,"Permission is granted");
+    //             return true;
+    //         } else {
+
+    //             Log.v(TAG,"Permission is revoked");
+    //             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+    //             return false;
+    //         }
+    //     }
+    //     else { //permission is automatically granted on sdk<23 upon installation
+    //         Log.v(TAG,"Permission is granted");
+    //         return true;
+    //     }
+    // }
 
   private boolean isMissingPermissions() {
     return false;

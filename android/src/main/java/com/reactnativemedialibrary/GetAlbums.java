@@ -6,7 +6,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
+
 import java.util.List;
 
 import com.facebook.react.bridge.Promise;
@@ -26,7 +29,7 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
 
   @Override
   protected Void doInBackground(Void... params) {
-    List result = new ArrayList();
+    WritableNativeArray result = new WritableNativeArray();
     final String countColumn = "COUNT(*)";
     final String[] projection = {MediaStore.Images.Media.BUCKET_ID, MediaStore.Images.Media.BUCKET_DISPLAY_NAME, countColumn};
     final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE + ") /*";
@@ -38,8 +41,8 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
         null,
         "*/ GROUP BY " + MediaStore.Images.Media.BUCKET_ID +
             " ORDER BY " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME)) {
-
-      if (albums == null) {
+              
+       if (albums == null) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get albums. Query returns null.");
       } else {
         final int bucketIdIndex = albums.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
@@ -47,12 +50,12 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
         final int numOfItemsIndex = albums.getColumnIndex(countColumn);
 
         while (albums.moveToNext()) {
-          Bundle album = new Bundle();
+          WritableNativeMap album = new WritableNativeMap();
           album.putString("id", albums.getString(bucketIdIndex));
           album.putString("title", albums.getString(bucketDisplayNameIndex));
-          album.putParcelable("type", null);
+          // album.putParcelable("type", null);
           album.putInt("assetCount", albums.getInt(numOfItemsIndex));
-          result.add(album);
+          result.pushMap(album);
         }
         mPromise.resolve(result);
       }

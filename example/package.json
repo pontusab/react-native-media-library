@@ -8,8 +8,10 @@
     "start:android": "react-native run-android"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.6.1",
     "react": "16.8.6",
-    "react-native": "0.59.10"
+    "react-native": "0.59.10",
+    "react-native-permissions": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",
