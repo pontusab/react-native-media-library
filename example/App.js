@@ -1,36 +1,71 @@
-import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, Image, FlatList } from 'react-native';
 import Permissions from 'react-native-permissions';
 import * as MediaLibrary from 'react-native-media-library';
 
 function App() {
-  async function fetchAssets() {
-    try {
-      // const assets = await MediaLibrary.getAssetsAsync({
-      //   first: 10
-      // });
-      // console.log('assets', assets);
+  const [assets, setAssets] = useState([]);
+  const [albums, setAlbums] = useState([]);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [endCursor, setEndCursor] = useState();
 
-      const albums = await MediaLibrary.getAlbumsAsync();
-      console.log('albums', albums);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  const fetchAssets = useCallback(
+    async after => {
+      if (!hasNextPage) {
+        return;
+      }
+
+      try {
+        const result = await MediaLibrary.getAssetsAsync({
+          after,
+          // album: '-2075821635',
+          first: 10
+        });
+
+        setAssets(p => p.concat(result.assets));
+        setHasNextPage(result.hasNextPage);
+        setEndCursor(result.endCursor);
+      } catch (err) {
+        logError(err);
+      }
+    },
+    [selectedAlbum]
+  );
+
+  const fetchAlbums = useCallback(async () => {
+    const albums = await MediaLibrary.getAlbumsAsync();
+    setAlbums(albums);
+  }, []);
 
   useEffect(() => {
     Permissions.request('photo').then(response => {
-      // console.log(response);
+      if (response === 'authorized') {
+        fetchAlbums();
+        fetchAssets();
+      }
     });
   }, []);
 
-  useEffect(() => {
-    fetchAssets();
-  }, []);
+  const onEndReached = useCallback(() => {
+    if (hasNextPage) {
+      fetchAssets(endCursor);
+    }
+  }, [hasNextPage, endCursor, fetchAssets]);
 
   return (
     <View>
-      <Text>Hello</Text>
+      {albums.map(album => (
+        <Text key={album.id} onPress={() => console.log(album.id)}>
+          {album.title}
+        </Text>
+      ))}
+      <FlatList
+        data={assets}
+        renderItem={({ item }) => <Image source={item} />}
+        keyExtractor={({ id }) => id}
+        onEndReached={onEndReached}
+      />
     </View>
   );
 }

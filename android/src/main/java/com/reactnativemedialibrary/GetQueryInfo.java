@@ -40,58 +40,59 @@ class GetQueryInfo {
     return mOrder.toString();
   }
 
-  public GetQueryInfo invoke() {
-    mLimit = 20; //mInput.containsKey("first") ? ((Double) mInput.get("first")).intValue() : 20;
+    public GetQueryInfo invoke() {
+    mLimit = mInput.hasKey("first") ? mInput.getInt("first") : 20;
 
-    // mSelection = new StringBuilder();
-    // if (mInput.containsKey("album")) {
-    //   mSelection.append(MediaStore.Images.Media.BUCKET_ID).append(" = ").append(mInput.get("album"));
-    //   mSelection.append(" AND ");
-    // }
+    mSelection = new StringBuilder();
+    if (mInput.hasKey("album")) {
+      mSelection.append(MediaStore.Images.Media.BUCKET_ID).append(" = ").append(mInput.getString("album"));
+      mSelection.append(" AND ");
+    }
 
-    // List<Object> mediaType = mInput.containsKey("mediaType") ? (List<Object>) mInput.get("mediaType") : null;
+    List<Object> mediaType = null;
+    // List<Object> mediaType = mInput.hasKey("mediaType") ? (List<Object>) mInput.getMap("mediaType") : null;
 
-    // if (mediaType != null && !mediaType.contains(MEDIA_TYPE_ALL)) {
-    //   List<Integer> mediaTypeInts = new ArrayList<Integer>();
+    if (mediaType != null && !mediaType.contains(MEDIA_TYPE_ALL)) {
+      List<Integer> mediaTypeInts = new ArrayList<Integer>();
 
-    //   for (Object mediaTypeStr : mediaType) {
-    //     mediaTypeInts.add(convertMediaType(mediaTypeStr.toString()));
-    //   }
-    //   mSelection.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append(" IN (").append(TextUtils.join(",", mediaTypeInts)).append(")");
-    // } else {
-    //   mSelection.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append(" != ").append(MediaStore.Files.FileColumns.MEDIA_TYPE_NONE);
-    // }
+      for (Object mediaTypeStr : mediaType) {
+        mediaTypeInts.add(convertMediaType(mediaTypeStr.toString()));
+      }
+      mSelection.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append(" IN (").append(TextUtils.join(",", mediaTypeInts)).append(")");
+    } else {
+      mSelection.append(MediaStore.Files.FileColumns.MEDIA_TYPE).append(" != ").append(MediaStore.Files.FileColumns.MEDIA_TYPE_NONE);
+    }
 
-    // Double createdAfter = (Double) mInput.get("createdAfter");
-    // Double createdBefore = (Double) mInput.get("createdBefore");
+    Double createdAfter = mInput.hasKey("createdAfter") ? (Double) mInput.getDouble("createdAfter") : null;
+    Double createdBefore = mInput.hasKey("createdBefore") ? (Double) mInput.getDouble("createdBefore"): null;
 
-    // if (createdAfter != null) {
-    //   mSelection
-    //           .append(" AND ")
-    //           .append(MediaStore.Images.Media.DATE_TAKEN)
-    //           .append(" > ")
-    //           .append(createdAfter.longValue());
-    // }
+    if (createdAfter != null) {
+      mSelection
+              .append(" AND ")
+              .append(MediaStore.Images.Media.DATE_TAKEN)
+              .append(" > ")
+              .append(createdAfter.longValue());
+    }
 
-    // if (createdBefore != null) {
-    //   mSelection
-    //           .append(" AND ")
-    //           .append(MediaStore.Images.Media.DATE_TAKEN)
-    //           .append(" < ")
-    //           .append(createdBefore.longValue());
-    // }
+    if (createdBefore != null) {
+      mSelection
+              .append(" AND ")
+              .append(MediaStore.Images.Media.DATE_TAKEN)
+              .append(" < ")
+              .append(createdBefore.longValue());
+    }
 
     mOrder = new StringBuilder();
-    // if (mInput.containsKey("sortBy") && ((List) mInput.get("sortBy")).size() > 0) {
-    //   mOrder.append(mapOrderDescriptor((List) mInput.get("sortBy")));
+    // if (mInput.hasKey("sortBy") && ((List) mInput.getMap("sortBy")).size() > 0) {
+      // mOrder.append(mapOrderDescriptor((List) mInput.getMap("sortBy")));
     // } else {
       mOrder.append(MediaStore.Images.Media.DEFAULT_SORT_ORDER);
     // }
 
-    // // to maintain compatibility with IOS field after is in string object
-    mOffset = 0;
-    // mOffset = mInput.containsKey("after") ?
-    //     Integer.parseInt((String) mInput.get("after")) : 0;
+    // to maintain compatibility with IOS field after is in string object
+    mOffset = mInput.hasKey("after") ?
+        Integer.parseInt((String) mInput.getString("after")) : 0;
+
     return this;
   }
 }

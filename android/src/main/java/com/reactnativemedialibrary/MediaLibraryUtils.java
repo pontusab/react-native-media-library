@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
-// import android.support.media.ExifInterface;
+import android.support.media.ExifInterface;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 
 import static com.reactnativemedialibrary.MediaLibraryConstants.ASSET_PROJECTION;
 import static com.reactnativemedialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
@@ -108,7 +110,8 @@ final class MediaLibraryUtils {
       } else {
         if (asset.getCount() == 1) {
           asset.moveToFirst();
-          ArrayList<Bundle> array = new ArrayList<>();
+           WritableNativeArray array = new WritableNativeArray();
+          // ArrayList<Bundle> array = new ArrayList<>();
           putAssetsInfo(asset, array, 1, 0, fullInfo);
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
@@ -121,12 +124,13 @@ final class MediaLibraryUtils {
     } catch (SecurityException e) {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
           "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
-    } catch (IOException e) {
+    }
+     catch (IOException e) {
       promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
     }
   }
 
-  static void putAssetsInfo(Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException {
+    static void putAssetsInfo(Cursor cursor, WritableNativeArray response, int limit, int offset, boolean fullInfo) throws IOException {
     final int idIndex = cursor.getColumnIndex(Media._ID);
     final int filenameIndex = cursor.getColumnIndex(Media.DISPLAY_NAME);
     final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
@@ -146,14 +150,14 @@ final class MediaLibraryUtils {
       int mediaType = cursor.getInt(mediaTypeIndex);
       int[] size = getSizeFromCursor(cursor, mediaType, localUriIndex);
 
-      Bundle asset = new Bundle();
+      WritableNativeMap asset = new WritableNativeMap();
       asset.putString("id", cursor.getString(idIndex));
       asset.putString("filename", cursor.getString(filenameIndex));
       asset.putString("uri", localUri);
       asset.putString("mediaType", exportMediaType(mediaType));
-      asset.putLong("width", size[0]);
-      asset.putLong("height", size[1]);
-      asset.putLong("creationTime", cursor.getLong(creationDateIndex));
+      asset.putDouble("width", size[0]);
+      asset.putDouble("height", size[1]);
+      asset.putDouble("creationTime", cursor.getLong(creationDateIndex));
       asset.putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000d);
       asset.putDouble("duration", cursor.getInt(durationIndex) / 1000d);
       asset.putString("albumId", cursor.getString(albumIdIndex));
@@ -170,16 +174,16 @@ final class MediaLibraryUtils {
 
         // we want location to be null if it's not available
         if (latitude != 0.0 || longitude != 0.0) {
-          Bundle location = new Bundle();
+          WritableNativeMap location = new WritableNativeMap();
           location.putDouble("latitude", latitude);
           location.putDouble("longitude", longitude);
-          asset.putParcelable("location", location);
+          asset.putMap("location", location);
         } else {
-          asset.putParcelable("location", null);
+          asset.putMap("location", null);
         }
       }
       cursor.moveToNext();
-      response.add(asset);
+      response.pushMap(asset);
     }
   }
 
@@ -265,29 +269,29 @@ final class MediaLibraryUtils {
     return TextUtils.join(",", result);
   }
 
-  static void getExifFullInfo(Cursor cursor, Bundle response) throws IOException {
-    // File input = new File(cursor.getString(cursor.getColumnIndex(Media.DATA)));
-    // // // // ExifInterface exifInterface = new ExifInterface(input.getPath());
-    // Bundle exifMap = new Bundle();
-    // for (String[] tagInfo : exifTags) {
-    //   String name = tagInfo[1];
-    //   // if (exifInterface.getAttribute(name) != null) {
-    //     String type = tagInfo[0];
-    //     switch (type) {
-    //       case "string":
-    //         // exifMap.putString(name, exifInterface.getAttribute(name));
-    //         break;
-    //       case "int":
-    //         // exifMap.putInt(name, exifInterface.getAttributeInt(name, 0));
-    //         break;
-    //       case "double":
-    //         // exifMap.putDouble(name, exifInterface.getAttributeDouble(name, 0));
-    //         break;
-    //     }
-    //   }
-    // }
-    // response.putParcelable("exif", exifMap);
-  }
+   static void getExifFullInfo(Cursor cursor, WritableNativeMap response) throws IOException {
+      File input = new File(cursor.getString(cursor.getColumnIndex(Media.DATA)));
+      ExifInterface exifInterface = new ExifInterface(input.getPath());
+      WritableNativeMap exifMap = new WritableNativeMap();
+      for (String[] tagInfo : exifTags) {
+        String name = tagInfo[1];
+        if (exifInterface.getAttribute(name) != null) {
+          String type = tagInfo[0];
+          switch (type) {
+            case "string":
+              exifMap.putString(name, exifInterface.getAttribute(name));
+              break;
+            case "int":
+              exifMap.putInt(name, exifInterface.getAttributeInt(name, 0));
+              break;
+            case "double":
+              exifMap.putDouble(name, exifInterface.getAttributeDouble(name, 0));
+              break;
+          }
+        }
+      }
+      response.putMap("exif", exifMap);
+    }
 
   static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
@@ -363,7 +367,7 @@ final class MediaLibraryUtils {
     return TextUtils.join(",", array);
   }
 
-  static List<File> getAssetsById(Context context, Promise promise, String... assetsId) {
+static List<File> getAssetsById(Context context, Promise promise, String... assetsId) {
     final String[] path = {Media.DATA};
 
     final String selection = MediaStore.Images.Media._ID + " IN ( " + getInPart(assetsId) + " )";

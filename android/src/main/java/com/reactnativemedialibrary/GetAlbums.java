@@ -3,15 +3,10 @@ package com.reactnativemedialibrary;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.provider.MediaStore;
 
-// import java.util.ArrayList;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
-
-import java.util.List;
-
 import com.facebook.react.bridge.Promise;
 
 import static com.reactnativemedialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
@@ -53,8 +48,9 @@ class GetAlbums extends AsyncTask<Void, Void, Void> {
           WritableNativeMap album = new WritableNativeMap();
           album.putString("id", albums.getString(bucketIdIndex));
           album.putString("title", albums.getString(bucketDisplayNameIndex));
-          // album.putParcelable("type", null);
+          album.putString("type", null);
           album.putInt("assetCount", albums.getInt(numOfItemsIndex));
+          
           result.pushMap(album);
         }
         mPromise.resolve(result);
