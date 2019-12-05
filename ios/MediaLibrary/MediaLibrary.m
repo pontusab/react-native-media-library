@@ -201,14 +201,14 @@ RCT_EXPORT_METHOD(getAlbumsAsync:(NSDictionary *)options
   fetchOptions.includeAllBurstAssets = NO;
   
   PHFetchResult *userAlbumsFetchResult = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:fetchOptions];
-  [albums addObjectsFromArray:[MediaLibrary _exportCollections:userAlbumsFetchResult]];
+  [albums addObjectsFromArray:[MediaLibrary _exportCollections:userAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
 
   if ([options[@"includeSmartAlbums"] boolValue]) {
     PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
     [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
                                              subtype:PHAssetCollectionSubtypeAlbumRegular
                                              options:fetchOptions];
-    [albums addObjectsFromArray:[MediaLibrary _exportCollections:smartAlbumsFetchResult]];
+    [albums addObjectsFromArray:[MediaLibrary _exportCollections:smartAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
   }
   
   resolve(albums);
@@ -221,12 +221,12 @@ RCT_EXPORT_METHOD(getMomentsAsync:(RCTPromiseResolveBlock)resolve
     return;
   }
   
-  PHFetchOptions *options = [PHFetchOptions new];
+    PHFetchOptions *options = [PHFetchOptions new];
   options.includeHiddenAssets = NO;
   options.includeAllBurstAssets = NO;
   
   PHFetchResult *fetchResult = [PHAssetCollection fetchMomentsWithOptions:options];
-  NSArray<NSDictionary *> *albums = [MediaLibrary _exportCollections:fetchResult];
+  NSArray<NSDictionary *> *albums = [MediaLibrary _exportCollections:fetchResult withFetchOptions:options inFolder:nil];
   
   resolve(albums);
 }
@@ -636,9 +636,15 @@ RCT_EXPORT_METHOD(getAssetsAsync:(NSDictionary *)options
 
 + (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection
 {
+  return [MediaLibrary _exportCollection:collection inFolder:nil];
+}
+
++ (nullable NSDictionary *)_exportCollection:(PHAssetCollection *)collection inFolder:(nullable NSString *)folderName
+{
   if (collection) {
     return @{
              @"id": [MediaLibrary _assetIdFromLocalId:collection.localIdentifier],
+             @"folderName": NullIfNil(folderName),
              @"title": collection.localizedTitle ?: [NSNull null],
              @"type": [MediaLibrary _stringifyAlbumType:collection.assetCollectionType],
              @"assetCount": [MediaLibrary _assetCountOfCollection:collection],
@@ -652,11 +658,18 @@ RCT_EXPORT_METHOD(getAssetsAsync:(NSDictionary *)options
 }
 
 + (NSArray *)_exportCollections:(PHFetchResult *)collections
+               withFetchOptions:(PHFetchOptions *)options
+                       inFolder:(nullable NSString *)folderName
 {
   NSMutableArray<NSDictionary *> *albums = [NSMutableArray new];
-  
-  for (PHAssetCollection *collection in collections) {
-    [albums addObject:[MediaLibrary _exportCollection:collection]];
+  for (PHCollection *collection in collections) {
+    if ([collection isKindOfClass:[PHAssetCollection class]]) {
+      [albums addObject:[MediaLibrary _exportCollection:(PHAssetCollection *)collection inFolder:folderName]];
+    }  else if ([collection isKindOfClass:[PHCollectionList class]]) {
+      // getting albums from folders
+      PHFetchResult *collectionsInFolder = [PHCollectionList fetchCollectionsInCollectionList:(PHCollectionList *)collection options:options];
+      [albums addObjectsFromArray:[MediaLibrary _exportCollections:collectionsInFolder withFetchOptions:options inFolder:collection.localizedTitle]];
+    }
   }
   return [albums copy];
 }
