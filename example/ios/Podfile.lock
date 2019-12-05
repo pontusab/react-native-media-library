@@ -62,13 +62,17 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - ReactNativePermissions (1.2.0):
+    - React
+  - RNCAsyncStorage (1.6.1):
+    - React
   - yoga (0.59.10.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - react-native-media-library (from `../../ios`)
+  - react-native-media-library (from `../../`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
   - React/DevSupport (from `../node_modules/react-native`)
@@ -81,6 +85,8 @@ DEPENDENCIES:
   - React/RCTPushNotification (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - ReactNativePermissions (from `../node_modules/react-native-permissions`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -97,7 +103,11 @@ EXTERNAL SOURCES:
   React:
     :path: "../node_modules/react-native"
   react-native-media-library:
-    :path: "../../ios"
+    :path: "../../"
+  ReactNativePermissions:
+    :path: "../node_modules/react-native-permissions"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-community/async-storage"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -107,9 +117,11 @@ SPEC CHECKSUMS:
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   React: 36d0768f9e93be2473b37e7fa64f92c1d5341eef
-  react-native-media-library: 7bea5fad829d5abf9026127152c0c29cbfe02fd6
+  react-native-media-library: ec7242c9dfea9cffe53c814ba85170d3e1f8892a
+  ReactNativePermissions: f3beb8871251594a8ea2c6b19a3f8252d5c7379d
+  RNCAsyncStorage: 2e2e3feb9bdadc752a026703d8c4065ca912e75a
   yoga: 684513b14b03201579ba3cee20218c9d1298b0cc
 
-PODFILE CHECKSUM: 09d5294488b66689e8d778cb15b66b567f837431
+PODFILE CHECKSUM: 40d327567144e108b8bfb32e4996246229ba4711
 
 COCOAPODS: 1.6.1

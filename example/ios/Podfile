@@ -31,7 +31,7 @@ target 'Example' do
   pod 'glog', :podspec => File.join(react_path,'third-party-podspecs/glog.podspec')
   pod 'yoga', :path => File.join(react_path, 'ReactCommon/yoga')
 
-  pod 'react-native-media-library', :path => '../../ios'
+  pod 'react-native-media-library', :path => '../../'
   pod 'ReactNativePermissions', :path => '../node_modules/react-native-permissions'
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
