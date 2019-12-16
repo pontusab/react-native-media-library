@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/pontusab/react-native-media-library.git", :tag => "v#{s.version}" }
   s.source_files   = 'MediaLibrary/**/*.{h,m}'
-  s.preserve_paths = 'MediaLibrary/**/*.{h,m}'
  
   s.dependency 'React'
 end

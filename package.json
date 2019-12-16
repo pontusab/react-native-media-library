@@ -1,7 +1,7 @@
 {
   "name": "@pontusab/react-native-media-library",
   "author": "Pontus Abrahamsson",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Provides access to user's media library.",
   "homepage": "https://github.com/pontusab/react-native-media-library",
   "main": "build/MediaLibrary.js",
