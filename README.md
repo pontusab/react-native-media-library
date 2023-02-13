@@ -4,6 +4,11 @@ Requires `Permissions.CAMERA_ROLL` permissions.
 
 ## Installation
 
+yarn add react-native-media-library@https://github.com/pontusab/react-native-media-library.git
+
+or 
+
+npm i react-native-media-library@https://github.com/pontusab/react-native-media-library.git
 
 > **Note**: Not compatible with web.
 
